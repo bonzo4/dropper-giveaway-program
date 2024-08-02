@@ -1,0 +1,38 @@
+use anchor_lang::prelude::*;
+
+use crate::state::SolGiveaway;
+
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub struct SetSolGiveawayWinnersOptions {
+    giveaway_id: u64,
+    winner_keys: Vec<Pubkey>,
+}
+
+pub fn set_sol_giveaway_winners(
+    ctx: Context<SetSolGiveawayWinners>,
+    options: SetSolGiveawayWinnersOptions,
+) -> Result<()> {
+    let giveaway = &mut ctx.accounts.giveaway;
+
+    giveaway.winners = Some(options.winner_keys);
+
+    Ok(())
+}
+
+#[derive(Accounts)]
+#[instruction(options: SetSolGiveawayWinnersOptions)]
+pub struct SetSolGiveawayWinners<'info> {
+    #[account(
+        mut,
+        constraint=signer.key().to_string() == "FNSeGdeCFkULxGd7vSmWqBrQHN6XseCXBp51yXEjhSQQ",
+    )]
+    pub signer: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"sol_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
+        bump,
+        constraint=giveaway.winners.is_none()
+    )]
+    pub giveaway: Account<'info, SolGiveaway>,
+    pub system_program: Program<'info, System>,
+}
