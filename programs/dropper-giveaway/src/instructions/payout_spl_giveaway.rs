@@ -27,6 +27,11 @@ pub fn payout_spl_giveaway(
     {
         let winners = giveaway.winners.as_mut().ok_or(DropperError::Error)?;
 
+        require!(
+            winners.contains(winner_account_key),
+            DropperError::NoPrizesLeft
+        );
+
         if let Some(index) = winners.iter().position(|x| x == winner_account_key) {
             winners.remove(index);
         } else {
@@ -81,7 +86,7 @@ pub struct PayoutSplGiveaway<'info> {
         mut,
         seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
         bump,
-        constraint=giveaway.winners.is_some() && giveaway.winners.as_ref().unwrap().contains(signer.key)
+        constraint=giveaway.winners.is_some()
     )]
     pub giveaway: Account<'info, SplGiveaway>,
     #[account(

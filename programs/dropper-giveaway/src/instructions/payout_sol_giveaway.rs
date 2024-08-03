@@ -16,6 +16,11 @@ pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>) -> Result<()> {
     {
         let winners = giveaway.winners.as_mut().ok_or(DropperError::Error)?;
 
+        require!(
+            winners.contains(winner_account_key),
+            DropperError::NotAWinner
+        );
+
         if let Some(index) = winners.iter().position(|x| x == winner_account_key) {
             winners.remove(index);
         } else {
@@ -49,7 +54,7 @@ pub struct PayoutSolGiveaway<'info> {
         mut,
         seeds = [b"sol_giveaway".as_ref(), &_options.giveaway_id.to_le_bytes()],
         bump,
-        constraint=giveaway.winners.is_some() && giveaway.winners.as_ref().unwrap().contains(signer.key)
+        constraint=giveaway.winners.is_some()
     )]
     pub giveaway: Account<'info, SolGiveaway>,
     pub system_program: Program<'info, System>,

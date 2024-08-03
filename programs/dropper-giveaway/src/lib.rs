@@ -8,36 +8,15 @@ pub mod instructions;
 pub mod state;
 
 #[program]
-pub mod dropper_contract {
+pub mod dropper_giveaway {
 
     use super::*;
 
-    pub fn create_spl_giveaway(
-        ctx: Context<CreateSplGivewaway>,
-        options: CreateSplGiveawayOptions,
+    pub fn claim_sol_giveaway(
+        ctx: Context<ClaimSolGiveaway>,
+        _options: ClaimSolGiveawayOptions,
     ) -> Result<()> {
-        instructions::create_spl_giveaway(ctx, options)
-    }
-
-    pub fn create_sol_giveaway(
-        ctx: Context<CreateSolGiveaway>,
-        options: CreateSolGiveawayOptions,
-    ) -> Result<()> {
-        instructions::create_sol_giveaway(ctx, options)
-    }
-
-    pub fn payout_spl_giveaway(
-        ctx: Context<PayoutSplGiveaway>,
-        options: PayoutSplGiveawayOptions,
-    ) -> Result<()> {
-        instructions::payout_spl_giveaway(ctx, options)
-    }
-
-    pub fn payout_sol_giveaway(
-        ctx: Context<PayoutSolGiveaway>,
-        _options: PayoutSolGiveawayOptions,
-    ) -> Result<()> {
-        instructions::payout_sol_giveaway(ctx)
+        instructions::claim_sol_giveaway(ctx)
     }
 
     pub fn claim_spl_giveaway(
@@ -47,11 +26,46 @@ pub mod dropper_contract {
         instructions::claim_spl_giveaway(ctx, options)
     }
 
-    pub fn claim_sol_giveaway(
-        ctx: Context<ClaimSolGiveaway>,
-        _options: ClaimSolGiveawayOptions,
+    pub fn create_sol_giveaway(
+        ctx: Context<CreateSolGiveaway>,
+        options: CreateSolGiveawayOptions,
     ) -> Result<()> {
-        instructions::claim_sol_giveaway(ctx)
+        instructions::create_sol_giveaway(ctx, options)
+    }
+
+    pub fn create_spl_giveaway(
+        ctx: Context<CreateSplGivewaway>,
+        options: CreateSplGiveawayOptions,
+    ) -> Result<()> {
+        instructions::create_spl_giveaway(ctx, options)
+    }
+
+    pub fn payout_sol_giveaway(
+        ctx: Context<PayoutSolGiveaway>,
+        _options: PayoutSolGiveawayOptions,
+    ) -> Result<()> {
+        instructions::payout_sol_giveaway(ctx)
+    }
+
+    pub fn payout_spl_giveaway(
+        ctx: Context<PayoutSplGiveaway>,
+        options: PayoutSplGiveawayOptions,
+    ) -> Result<()> {
+        instructions::payout_spl_giveaway(ctx, options)
+    }
+
+    pub fn repo_sol_giveaway(
+        ctx: Context<RepoSolGiveaway>,
+        _options: RepoSolGiveawayOptions,
+    ) -> Result<()> {
+        instructions::repo_sol_giveaway(ctx)
+    }
+
+    pub fn repo_spl_giveaway(
+        ctx: Context<RepoSplGiveaway>,
+        options: RepoSplGiveawayOptions,
+    ) -> Result<()> {
+        instructions::repo_spl_giveaway(ctx, options)
     }
 
     pub fn set_sol_giveaway_winners(

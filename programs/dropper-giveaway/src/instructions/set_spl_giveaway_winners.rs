@@ -31,7 +31,7 @@ pub struct SetSplGiveawayWinners<'info> {
         mut,
         seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
         bump,
-        constraint=giveaway.winners.is_none()
+        constraint=giveaway.winners.is_none() && options.winner_keys.len() as u64 == giveaway.winners_amount
     )]
     pub giveaway: Account<'info, SplGiveaway>,
     pub system_program: Program<'info, System>,
