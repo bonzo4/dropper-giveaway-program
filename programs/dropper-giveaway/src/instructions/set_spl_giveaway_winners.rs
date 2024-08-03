@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, system_program};
 
 use crate::state::SplGiveaway;
 
@@ -24,6 +24,7 @@ pub fn set_spl_giveaway_winners(
 pub struct SetSplGiveawayWinners<'info> {
     #[account(
         mut,
+        signer,
         constraint=signer.key().to_string() == "FNSeGdeCFkULxGd7vSmWqBrQHN6XseCXBp51yXEjhSQQ",
     )]
     pub signer: Signer<'info>,
@@ -34,5 +35,6 @@ pub struct SetSplGiveawayWinners<'info> {
         constraint=giveaway.winners.is_none() && options.winner_keys.len() as u64 == giveaway.winners_amount
     )]
     pub giveaway: Account<'info, SplGiveaway>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
 }

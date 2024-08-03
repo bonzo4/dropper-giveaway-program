@@ -10,7 +10,6 @@ use crate::state::SplGiveaway;
 #[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
 pub struct CreateSplGiveawayOptions {
     giveaway_id: u64,
-    token_address: Pubkey,
     winners_amount: u64,
     reward_amount: u64,
 }
@@ -32,7 +31,7 @@ pub fn create_spl_giveaway(
 
     // intialize giveaway
     giveaway.bump = bump;
-    giveaway.token_address = options.token_address;
+    giveaway.token_address = token_mint.key();
     giveaway.winners_amount = options.winners_amount;
     giveaway.reward_amount = options.reward_amount;
     giveaway.winners = None;
@@ -70,11 +69,11 @@ pub fn create_spl_giveaway(
 #[derive(Accounts)]
 #[instruction(options: CreateSplGiveawayOptions)]
 pub struct CreateSplGivewaway<'info> {
-    #[account(mut)]
+    #[account(mut, signer)]
     pub signer: Signer<'info>,
     #[account(
         mut,
-        constraint=dropper_vault.key().to_string() == "89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE"
+        address=pubkey!("89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE"),
     )]
     pub dropper_vault: SystemAccount<'info>,
     #[account(
@@ -100,12 +99,11 @@ pub struct CreateSplGivewaway<'info> {
         token::authority=giveaway
     )]
     pub giveaway_vault: Account<'info, TokenAccount>,
-    #[account(
-        mut,
-        constraint=token_mint.key()==options.token_address,
-    )]
     pub token_mint: Box<Account<'info, Mint>>,
-    pub token_program: Program<'info, Token>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
+    #[account(address = anchor_spl::token::ID)]
+    pub token_program: Program<'info, Token>,
+    #[account(address = anchor_spl::associated_token::ID)]
     pub associated_token_program: Program<'info, AssociatedToken>,
 }

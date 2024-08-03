@@ -8,11 +8,10 @@ import {
   getUserKeypair,
 } from "./utils/wallets";
 import { expect } from "chai";
-import { PublicKey } from "@solana/web3.js";
 
 describe("Sol Giveaway", () => {
   const program = getProgram();
-  const giveawayId = -28;
+  const giveawayId = -44;
 
   const giveawayPDA = getSolGiveawayPda(program, giveawayId);
   const owner = getOwnerKeypair();
@@ -26,13 +25,6 @@ describe("Sol Giveaway", () => {
         lamportsAmount: new BN(0.25 * Math.pow(10, 9)),
         winnersAmount: new BN(3),
       })
-      .accountsPartial({
-        signer: owner.publicKey,
-        dropperVault: new PublicKey(
-          "89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE"
-        ),
-        giveaway: giveawayPDA,
-      })
       .signers([owner])
       .rpc()
       .catch((err) => console.log(err));
@@ -45,16 +37,9 @@ describe("Sol Giveaway", () => {
   it("It fails to pay out sol", async () => {
     try {
       await program.methods
-        .payoutSolGiveaway({
-          winnerKey: user.publicKey,
-          giveawayId: new BN(giveawayId),
-        })
+        .payoutSolGiveaway(new BN(giveawayId))
         .signers([user])
-        .accountsPartial({
-          signer: user.publicKey,
-          winnerAccount: user.publicKey,
-          giveaway: giveawayPDA,
-        })
+        .accounts({ signer: user.publicKey })
         .rpc();
     } catch (err) {
       expect(err);
@@ -68,10 +53,7 @@ describe("Sol Giveaway", () => {
         giveawayId: new BN(giveawayId),
       })
       .signers([manager])
-      .accountsPartial({
-        signer: manager.publicKey,
-        giveaway: giveawayPDA,
-      })
+      .accounts({ signer: manager.publicKey })
       .rpc()
       .catch((err) => console.log(err));
 
@@ -82,16 +64,9 @@ describe("Sol Giveaway", () => {
 
   it("it pays out sol", async () => {
     await program.methods
-      .payoutSolGiveaway({
-        winnerKey: user.publicKey,
-        giveawayId: new BN(giveawayId),
-      })
+      .payoutSolGiveaway(new BN(giveawayId))
       .signers([manager])
-      .accountsPartial({
-        signer: manager.publicKey,
-        winnerAccount: user.publicKey,
-        giveaway: giveawayPDA,
-      })
+      .accounts({ signer: manager.publicKey, winnerAccount: user.publicKey })
       .rpc()
       .catch((err) => console.log(err));
 
@@ -104,14 +79,9 @@ describe("Sol Giveaway", () => {
 
   it("it claims sol", async () => {
     await program.methods
-      .claimSolGiveaway({
-        giveawayId: new BN(giveawayId),
-      })
-      .signers([owner, user])
-      .accountsPartial({
-        signer: user.publicKey,
-        giveaway: giveawayPDA,
-      })
+      .claimSolGiveaway(new BN(giveawayId))
+      .signers([user])
+      .accounts({ signer: user.publicKey })
       .rpc()
       .catch((err) => console.log(err));
 
@@ -124,15 +94,11 @@ describe("Sol Giveaway", () => {
 
   it("repos unclaimed sol", async () => {
     await program.methods
-      .repoSolGiveaway({
-        giveawayId: new BN(giveawayId),
-        destinationKey: owner.publicKey,
-      })
+      .repoSolGiveaway(new BN(giveawayId))
       .signers([manager])
       .accountsPartial({
         signer: manager.publicKey,
         destinationAccount: owner.publicKey,
-        giveaway: giveawayPDA,
       })
       .rpc()
       .catch((err) => console.log(err));
@@ -145,15 +111,11 @@ describe("Sol Giveaway", () => {
   it("It fails to pay out sol 2", async () => {
     try {
       await program.methods
-        .payoutSolGiveaway({
-          winnerKey: user.publicKey,
-          giveawayId: new BN(giveawayId),
-        })
+        .payoutSolGiveaway(new BN(giveawayId))
         .signers([owner])
         .accountsPartial({
           signer: owner.publicKey,
           winnerAccount: user.publicKey,
-          giveaway: giveawayPDA,
         })
         .rpc();
     } catch (err) {

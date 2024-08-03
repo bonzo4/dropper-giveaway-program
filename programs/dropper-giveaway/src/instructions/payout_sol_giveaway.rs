@@ -1,12 +1,6 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::system_program};
 
 use crate::{errors::DropperError, state::SolGiveaway};
-
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
-pub struct PayoutSolGiveawayOptions {
-    giveaway_id: u64,
-    winner_key: Pubkey,
-}
 
 pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
@@ -38,24 +32,23 @@ pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(_options: PayoutSolGiveawayOptions)]
+#[instruction(_giveaway_id: u64)]
 pub struct PayoutSolGiveaway<'info> {
     #[account(
         mut,
+        signer,
         constraint=signer.key().to_string() == "FNSeGdeCFkULxGd7vSmWqBrQHN6XseCXBp51yXEjhSQQ",
     )]
     pub signer: Signer<'info>,
-    #[account(
-        mut,
-        constraint=_options.winner_key==winner_account.key()
-    )]
+    #[account(mut)]
     pub winner_account: SystemAccount<'info>,
     #[account(
         mut,
-        seeds = [b"sol_giveaway".as_ref(), &_options.giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes()],
         bump,
         constraint=giveaway.winners.is_some()
     )]
     pub giveaway: Account<'info, SolGiveaway>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
 }

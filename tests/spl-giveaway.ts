@@ -19,7 +19,7 @@ describe("Spl Giveaway", () => {
   const user = getUserKeypair();
 
   const program = getProgram();
-  const giveawayId = -28;
+  const giveawayId = -44;
 
   const giveawayPDA = getSplGiveawayPda(program, giveawayId);
 
@@ -34,16 +34,10 @@ describe("Spl Giveaway", () => {
         giveawayId: new BN(giveawayId),
         rewardAmount: new BN(0.1 * Math.pow(10, 9)),
         winnersAmount: new BN(3),
-        tokenAddress: mint,
       })
       .signers([owner])
-      .accountsPartial({
-        signer: owner.publicKey,
-        dropperVault: new PublicKey(
-          "89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE"
-        ),
+      .accounts({
         tokenMint: mint,
-        giveaway: giveawayPDA,
       })
       .rpc()
       .catch((err) => console.log(err));
@@ -56,12 +50,13 @@ describe("Spl Giveaway", () => {
   it("It fails to pay out spl", async () => {
     try {
       await program.methods
-        .payoutSplGiveaway({
-          winnerKey: user.publicKey,
-          giveawayId: new BN(giveawayId),
-        })
+        .payoutSplGiveaway(new BN(giveawayId))
         .signers([user])
-        .accountsPartial({ winnerAccount: user.publicKey, tokenMint: mint })
+        .accounts({
+          signer: user.publicKey,
+          winnerAccount: user.publicKey,
+          tokenMint: mint,
+        })
         .rpc();
     } catch (err) {
       expect(err);
@@ -75,9 +70,8 @@ describe("Spl Giveaway", () => {
         giveawayId: new BN(giveawayId),
       })
       .signers([manager])
-      .accountsPartial({
+      .accounts({
         signer: manager.publicKey,
-        giveaway: giveawayPDA,
       })
       .rpc()
       .catch((err) => console.log(err));
@@ -89,12 +83,9 @@ describe("Spl Giveaway", () => {
 
   it("it pays out spl", async () => {
     await program.methods
-      .payoutSplGiveaway({
-        winnerKey: user.publicKey,
-        giveawayId: new BN(giveawayId),
-      })
+      .payoutSplGiveaway(new BN(giveawayId))
       .signers([manager])
-      .accountsPartial({
+      .accounts({
         signer: manager.publicKey,
         winnerAccount: user.publicKey,
         tokenMint: mint,
@@ -111,9 +102,7 @@ describe("Spl Giveaway", () => {
 
   it("it claims spl", async () => {
     await program.methods
-      .claimSplGiveaway({
-        giveawayId: new BN(giveawayId),
-      })
+      .claimSplGiveaway(new BN(giveawayId))
       .signers([user, owner])
       .accountsPartial({
         signer: user.publicKey,
@@ -131,14 +120,10 @@ describe("Spl Giveaway", () => {
 
   it("repos unclaimed spl", async () => {
     await program.methods
-      .repoSplGiveaway({
-        giveawayId: new BN(giveawayId),
-        destinationKey: owner.publicKey,
-      })
+      .repoSplGiveaway(new BN(giveawayId))
       .signers([manager])
       .accountsPartial({
         signer: manager.publicKey,
-        giveaway: giveawayPDA,
         destinationAccount: owner.publicKey,
         tokenMint: mint,
       })
@@ -153,12 +138,13 @@ describe("Spl Giveaway", () => {
   it("It fails to pay out spl 2", async () => {
     try {
       await program.methods
-        .payoutSplGiveaway({
-          winnerKey: user.publicKey,
-          giveawayId: new BN(giveawayId),
-        })
+        .payoutSplGiveaway(new BN(giveawayId))
         .signers([manager])
-        .accountsPartial({ winnerAccount: user.publicKey, tokenMint: mint })
+        .accounts({
+          signer: manager.publicKey,
+          winnerAccount: user.publicKey,
+          tokenMint: mint,
+        })
         .rpc();
     } catch (err) {
       expect(err);

@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, system_program};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{transfer_checked, Mint, Token, TokenAccount, TransferChecked},
@@ -6,16 +6,7 @@ use anchor_spl::{
 
 use crate::{errors::DropperError, state::SplGiveaway};
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
-pub struct RepoSplGiveawayOptions {
-    giveaway_id: u64,
-    destination_key: Pubkey,
-}
-
-pub fn repo_spl_giveaway(
-    ctx: Context<RepoSplGiveaway>,
-    options: RepoSplGiveawayOptions,
-) -> Result<()> {
+pub fn repo_spl_giveaway(ctx: Context<RepoSplGiveaway>, giveaway_id: u64) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
     let giveaway_vault = &ctx.accounts.giveaway_vault;
     let destination_token_account = &ctx.accounts.destination_token_account;
@@ -38,7 +29,7 @@ pub fn repo_spl_giveaway(
 
     let bump = ctx.bumps.giveaway;
     let seeds = vec![bump];
-    let binding = &options.giveaway_id.to_le_bytes();
+    let binding = &giveaway_id.to_le_bytes();
     let seeds = vec![b"spl_giveaway".as_ref(), binding, seeds.as_slice()];
     let seeds = vec![seeds.as_slice()];
     let seeds = seeds.as_slice();
@@ -58,17 +49,15 @@ pub fn repo_spl_giveaway(
 }
 
 #[derive(Accounts)]
-#[instruction(options: RepoSplGiveawayOptions)]
+#[instruction(giveaway_id: u64)]
 pub struct RepoSplGiveaway<'info> {
     #[account(
         mut,
+        signer,
         constraint=signer.key().to_string() == "FNSeGdeCFkULxGd7vSmWqBrQHN6XseCXBp51yXEjhSQQ",
     )]
     pub signer: Signer<'info>,
-    #[account(
-        mut,
-        constraint=options.destination_key==destination_account.key()
-    )]
+    #[account(mut)]
     pub destination_account: SystemAccount<'info>,
     #[account(
         init_if_needed,
@@ -79,7 +68,7 @@ pub struct RepoSplGiveaway<'info> {
     pub destination_token_account: Account<'info, TokenAccount>,
     #[account(
         mut,
-        seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
+        seeds = [b"spl_giveaway".as_ref(), &giveaway_id.to_le_bytes()],
         bump,
         constraint=giveaway.winners.is_some()
     )]
@@ -97,7 +86,10 @@ pub struct RepoSplGiveaway<'info> {
         constraint=token_mint.key()==giveaway.token_address,
     )]
     pub token_mint: Box<Account<'info, Mint>>,
-    pub token_program: Program<'info, Token>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
+    #[account(address = anchor_spl::token::ID)]
+    pub token_program: Program<'info, Token>,
+    #[account(address = anchor_spl::associated_token::ID)]
     pub associated_token_program: Program<'info, AssociatedToken>,
 }

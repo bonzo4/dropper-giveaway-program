@@ -1,11 +1,6 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, system_program};
 
 use crate::{errors::DropperError, state::SolGiveaway};
-
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
-pub struct ClaimSolGiveawayOptions {
-    giveaway_id: u64,
-}
 
 pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
@@ -32,16 +27,17 @@ pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(_options: ClaimSolGiveawayOptions)]
+#[instruction(_giveaway_id: u64)]
 pub struct ClaimSolGiveaway<'info> {
-    #[account(mut)]
+    #[account(mut, signer)]
     pub signer: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"sol_giveaway".as_ref(), &_options.giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes()],
         bump,
         constraint=giveaway.winners.is_some()
     )]
     pub giveaway: Account<'info, SolGiveaway>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
 }

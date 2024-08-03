@@ -56,11 +56,11 @@ pub fn create_sol_giveaway(
 #[derive(Accounts)]
 #[instruction(options: CreateSolGiveawayOptions)]
 pub struct CreateSolGiveaway<'info> {
-    #[account(mut)]
+    #[account(mut, signer)]
     pub signer: Signer<'info>,
     #[account(
         mut,
-        constraint=dropper_vault.key().to_string() == "89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE"
+        address=pubkey!("89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE")
     )]
     pub dropper_vault: SystemAccount<'info>,
     #[account(
@@ -71,5 +71,6 @@ pub struct CreateSolGiveaway<'info> {
         bump,
     )]
     pub giveaway: Account<'info, SolGiveaway>,
+    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
 }
