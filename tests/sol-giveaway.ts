@@ -11,7 +11,7 @@ import { expect } from "chai";
 
 describe("Sol Giveaway", () => {
   const program = getProgram();
-  const giveawayId = -44;
+  const giveawayId = -1;
 
   const giveawayPDA = getSolGiveawayPda(program, giveawayId);
   const owner = getOwnerKeypair();

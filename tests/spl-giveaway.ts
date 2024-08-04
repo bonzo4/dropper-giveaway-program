@@ -19,7 +19,7 @@ describe("Spl Giveaway", () => {
   const user = getUserKeypair();
 
   const program = getProgram();
-  const giveawayId = -44;
+  const giveawayId = -1;
 
   const giveawayPDA = getSplGiveawayPda(program, giveawayId);
 
