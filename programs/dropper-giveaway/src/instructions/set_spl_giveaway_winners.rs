@@ -14,7 +14,13 @@ pub fn set_spl_giveaway_winners(
 ) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
 
-    giveaway.winners = Some(options.winner_keys);
+    let winner_dif = giveaway.winners_amount - options.winner_keys.len() as u64;
+
+    let temp_winners = vec![Pubkey::default(); winner_dif as usize];
+
+    let winner_keys = options.winner_keys.iter().chain(temp_winners.iter());
+
+    giveaway.winners = Some(winner_keys.cloned().collect());
 
     Ok(())
 }
@@ -32,7 +38,7 @@ pub struct SetSplGiveawayWinners<'info> {
         mut,
         seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
         bump,
-        constraint=giveaway.winners.is_none() && options.winner_keys.len() as u64 == giveaway.winners_amount
+        constraint=giveaway.winners.is_none() && options.winner_keys.len() as u64 <= giveaway.winners_amount
     )]
     pub giveaway: Account<'info, SplGiveaway>,
     #[account(address = system_program::ID)]

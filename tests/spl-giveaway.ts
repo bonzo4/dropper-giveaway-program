@@ -19,7 +19,7 @@ describe("Spl Giveaway", () => {
   const user = getUserKeypair();
 
   const program = getProgram();
-  const giveawayId = -1;
+  const giveawayId = -4;
 
   const giveawayPDA = getSplGiveawayPda(program, giveawayId);
 
@@ -66,7 +66,7 @@ describe("Spl Giveaway", () => {
   it("selects winners", async () => {
     await program.methods
       .setSplGiveawayWinners({
-        winnerKeys: [user.publicKey, user.publicKey, user.publicKey],
+        winnerKeys: [user.publicKey, user.publicKey],
         giveawayId: new BN(giveawayId),
       })
       .signers([manager])
