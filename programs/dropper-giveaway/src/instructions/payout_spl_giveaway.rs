@@ -4,7 +4,7 @@ use anchor_spl::{
     token::{transfer_checked, Mint, Token, TokenAccount, TransferChecked},
 };
 
-use crate::{errors::DropperError, state::SplGiveaway};
+use crate::state::SplGiveaway;
 
 pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
@@ -15,20 +15,7 @@ pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) ->
     let winner_account_key = ctx.accounts.winner_account.key;
 
     // Remove winner from the winners list
-    {
-        let winners = giveaway.winners.as_mut().ok_or(DropperError::Error)?;
-
-        require!(
-            winners.contains(winner_account_key),
-            DropperError::NoPrizesLeft
-        );
-
-        if let Some(index) = winners.iter().position(|x| x == winner_account_key) {
-            winners.remove(index);
-        } else {
-            return Err(DropperError::Error.into());
-        }
-    }
+    giveaway.remove_winner(winner_account_key)?;
 
     // transfer spl context
     let spl_transfer_ctx = TransferChecked {

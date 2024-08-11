@@ -1,6 +1,6 @@
 use anchor_lang::{prelude::*, system_program};
 
-use crate::{errors::DropperError, state::SolGiveaway};
+use crate::state::SolGiveaway;
 
 pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
@@ -8,17 +8,7 @@ pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>) -> Result<()> {
     let signer_key = ctx.accounts.signer.key;
 
     // Remove winner from the winners list
-    {
-        let winners = giveaway.winners.as_mut().ok_or(DropperError::Error)?;
-
-        require!(winners.contains(signer.key), DropperError::NotAWinner);
-
-        if let Some(index) = winners.iter().position(|x| x == signer_key) {
-            winners.remove(index);
-        } else {
-            return Err(DropperError::Error.into());
-        }
-    }
+    giveaway.remove_winner(signer_key)?;
 
     let _ = giveaway.sub_lamports(giveaway.lamports_amount);
     let _ = signer.add_lamports(giveaway.lamports_amount);

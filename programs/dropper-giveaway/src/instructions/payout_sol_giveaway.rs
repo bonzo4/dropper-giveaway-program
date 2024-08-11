@@ -1,26 +1,13 @@
 use anchor_lang::{prelude::*, solana_program::system_program};
 
-use crate::{errors::DropperError, state::SolGiveaway};
+use crate::state::SolGiveaway;
 
 pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
     let winner_account_key = ctx.accounts.winner_account.key;
 
     // Remove winner from the winners list
-    {
-        let winners = giveaway.winners.as_mut().ok_or(DropperError::Error)?;
-
-        require!(
-            winners.contains(winner_account_key),
-            DropperError::NotAWinner
-        );
-
-        if let Some(index) = winners.iter().position(|x| x == winner_account_key) {
-            winners.remove(index);
-        } else {
-            return Err(DropperError::Error.into());
-        }
-    }
+    giveaway.remove_winner(winner_account_key)?;
 
     // Perform lamport transfers
     giveaway.sub_lamports(giveaway.lamports_amount)?;

@@ -5,13 +5,13 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-dropper_giveaway = "EWExm3SZPzDMmGYDtszCpVZ2a8QoaVNSzVqkqDXhS8Kx"
+dropper_giveaway = "8s9yegeQK6UJPJq25jquj7vQQx6yJJtKZ7CFLjUaj5cL"
 
 [registry]
 url = "https://api.devnet.solana.com"
 
 [provider]
-cluster = "Devnet"
+cluster = "devnet"
 wallet = "./owner.json"
 
 [scripts]
