@@ -19,12 +19,12 @@ pub fn create_spl_giveaway(
     options: CreateSplGiveawayOptions,
 ) -> Result<()> {
     let signer = &ctx.accounts.signer;
-    let dropper_vault = &ctx.accounts.dropper_vault;
+    // let dropper_vault = &ctx.accounts.dropper_vault;
     let giveaway = &mut ctx.accounts.giveaway;
     let giveaway_vault = &ctx.accounts.giveaway_vault;
     let token_payer_account = &ctx.accounts.token_payer_account;
     let token_mint = &ctx.accounts.token_mint;
-    let system_program = &ctx.accounts.system_program;
+    // let system_program = &ctx.accounts.system_program;
     let token_program = &ctx.accounts.token_program;
 
     let bump = ctx.bumps.giveaway;
@@ -36,17 +36,17 @@ pub fn create_spl_giveaway(
     giveaway.reward_amount = options.reward_amount;
     giveaway.winners = None;
 
-    // transfer sol context
-    let transfer_ctx = system_program::Transfer {
-        from: signer.to_account_info(),
-        to: dropper_vault.to_account_info(),
-    };
+    // // transfer sol context
+    // let transfer_ctx = system_program::Transfer {
+    //     from: signer.to_account_info(),
+    //     to: dropper_vault.to_account_info(),
+    // };
 
-    // transfer sol instruction
-    let _ = system_program::transfer(
-        CpiContext::new(system_program.to_account_info(), transfer_ctx),
-        10_u64.pow(8_u32),
-    );
+    // // transfer sol instruction
+    // let _ = system_program::transfer(
+    //     CpiContext::new(system_program.to_account_info(), transfer_ctx),
+    //     10_u64.pow(8_u32),
+    // );
 
     //transfer spl context
     let spl_transfer_ctx = TransferChecked {
@@ -86,7 +86,7 @@ pub struct CreateSplGivewaway<'info> {
         init,
         payer = signer,
         space = SplGiveaway::SIZE,
-        seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
+        seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes(), signer.key().as_ref()],
         bump,
     )]
     pub giveaway: Account<'info, SplGiveaway>,

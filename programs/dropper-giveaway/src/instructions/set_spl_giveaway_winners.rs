@@ -6,6 +6,7 @@ use crate::state::SplGiveaway;
 pub struct SetSplGiveawayWinnersOptions {
     giveaway_id: u64,
     winner_keys: Vec<Pubkey>,
+    creator_key: Pubkey,
 }
 
 pub fn set_spl_giveaway_winners(
@@ -36,7 +37,7 @@ pub struct SetSplGiveawayWinners<'info> {
     pub signer: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
+        seeds = [b"spl_giveaway".as_ref(), &options.giveaway_id.to_le_bytes(), &options.creator_key.as_ref()],
         bump,
         constraint=giveaway.winners.is_none() && options.winner_keys.len() as u64 <= giveaway.winners_amount
     )]

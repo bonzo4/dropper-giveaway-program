@@ -19,7 +19,7 @@ pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(_giveaway_id: u64)]
+#[instruction(_giveaway_id: u64, _creator_key: Pubkey)]
 pub struct PayoutSolGiveaway<'info> {
     #[account(
         mut,
@@ -31,7 +31,7 @@ pub struct PayoutSolGiveaway<'info> {
     pub winner_account: SystemAccount<'info>,
     #[account(
         mut,
-        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes(), &_creator_key.as_ref()],
         bump,
         constraint=giveaway.winners.is_some()
     )]

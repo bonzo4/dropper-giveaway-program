@@ -6,7 +6,11 @@ use anchor_spl::{
 
 use crate::state::SplGiveaway;
 
-pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) -> Result<()> {
+pub fn payout_spl_giveaway(
+    ctx: Context<PayoutSplGiveaway>,
+    giveaway_id: u64,
+    creator_key: Pubkey,
+) -> Result<()> {
     let giveaway = &mut ctx.accounts.giveaway;
     let giveaway_vault = &ctx.accounts.giveaway_vault;
     let winner_token_account = &ctx.accounts.winner_token_accout;
@@ -28,7 +32,13 @@ pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) ->
     let bump = ctx.bumps.giveaway;
     let seeds = vec![bump];
     let binding = &giveaway_id.to_le_bytes();
-    let seeds = vec![b"spl_giveaway".as_ref(), binding, seeds.as_slice()];
+    let binding2 = &creator_key.as_ref();
+    let seeds = vec![
+        b"spl_giveaway".as_ref(),
+        binding,
+        binding2,
+        seeds.as_slice(),
+    ];
     let seeds = vec![seeds.as_slice()];
     let seeds = seeds.as_slice();
 
@@ -41,7 +51,7 @@ pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) ->
 }
 
 #[derive(Accounts)]
-#[instruction(giveaway_id: u64)]
+#[instruction(giveaway_id: u64, creator_key: Pubkey)]
 pub struct PayoutSplGiveaway<'info> {
     #[account(
         mut,
@@ -60,7 +70,7 @@ pub struct PayoutSplGiveaway<'info> {
     pub winner_token_accout: Account<'info, TokenAccount>,
     #[account(
         mut,
-        seeds = [b"spl_giveaway".as_ref(), &giveaway_id.to_le_bytes()],
+        seeds = [b"spl_giveaway".as_ref(), &giveaway_id.to_le_bytes(), &creator_key.as_ref()],
         bump,
         constraint=giveaway.winners.is_some()
     )]

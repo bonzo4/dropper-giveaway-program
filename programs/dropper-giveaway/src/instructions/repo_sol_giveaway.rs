@@ -22,7 +22,7 @@ pub fn repo_sol_giveaway(ctx: Context<RepoSolGiveaway>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(_giveaway_id: u64)]
+#[instruction(_giveaway_id: u64, _creator_key: Pubkey)]
 pub struct RepoSolGiveaway<'info> {
     #[account(
         mut,
@@ -34,7 +34,7 @@ pub struct RepoSolGiveaway<'info> {
     pub destination_account: SystemAccount<'info>,
     #[account(
         mut,
-        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes(), &_creator_key.as_ref()],
         bump,
         constraint=giveaway.winners.is_some()
     )]

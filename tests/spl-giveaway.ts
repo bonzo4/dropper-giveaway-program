@@ -19,9 +19,9 @@ describe("Spl Giveaway", () => {
   const user = getUserKeypair();
 
   const program = getProgram();
-  const giveawayId = -12;
+  const giveawayId = -24;
 
-  const giveawayPDA = getSplGiveawayPda(program, giveawayId);
+  const giveawayPDA = getSplGiveawayPda(program, giveawayId, owner.publicKey);
 
   // const splAssociatedAccount = getAssociatedTokenAddressSync(
   //   mint,
@@ -50,7 +50,7 @@ describe("Spl Giveaway", () => {
   it("It fails to pay out spl", async () => {
     try {
       await program.methods
-        .payoutSplGiveaway(new BN(giveawayId))
+        .payoutSplGiveaway(new BN(giveawayId), owner.publicKey)
         .signers([user])
         .accounts({
           signer: user.publicKey,
@@ -68,6 +68,7 @@ describe("Spl Giveaway", () => {
       .setSplGiveawayWinners({
         winnerKeys: [user.publicKey, user.publicKey],
         giveawayId: new BN(giveawayId),
+        creatorKey: owner.publicKey,
       })
       .signers([manager])
       .accounts({
@@ -83,7 +84,7 @@ describe("Spl Giveaway", () => {
 
   it("it pays out spl", async () => {
     await program.methods
-      .payoutSplGiveaway(new BN(giveawayId))
+      .payoutSplGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([manager])
       .accounts({
         signer: manager.publicKey,
@@ -102,7 +103,7 @@ describe("Spl Giveaway", () => {
 
   it("it claims spl", async () => {
     await program.methods
-      .claimSplGiveaway(new BN(giveawayId))
+      .claimSplGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([user, owner])
       .accountsPartial({
         signer: user.publicKey,
@@ -120,7 +121,7 @@ describe("Spl Giveaway", () => {
 
   it("repos unclaimed spl", async () => {
     await program.methods
-      .repoSplGiveaway(new BN(giveawayId))
+      .repoSplGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([manager])
       .accountsPartial({
         signer: manager.publicKey,
@@ -138,7 +139,7 @@ describe("Spl Giveaway", () => {
   it("It fails to pay out spl 2", async () => {
     try {
       await program.methods
-        .payoutSplGiveaway(new BN(giveawayId))
+        .payoutSplGiveaway(new BN(giveawayId), owner.publicKey)
         .signers([manager])
         .accounts({
           signer: manager.publicKey,

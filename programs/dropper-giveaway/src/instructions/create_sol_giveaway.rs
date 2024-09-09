@@ -15,7 +15,7 @@ pub fn create_sol_giveaway(
     options: CreateSolGiveawayOptions,
 ) -> Result<()> {
     let signer = &ctx.accounts.signer;
-    let dropper_vault = &ctx.accounts.dropper_vault;
+    // let dropper_vault = &ctx.accounts.dropper_vault;
     let giveaway = &mut ctx.accounts.giveaway;
     let system_program = &ctx.accounts.system_program;
 
@@ -26,17 +26,17 @@ pub fn create_sol_giveaway(
     giveaway.lamports_amount = options.lamports_amount;
     giveaway.winners = None;
 
-    // transfer sol context
-    let transfer_ctx = system_program::Transfer {
-        from: signer.to_account_info(),
-        to: dropper_vault.to_account_info(),
-    };
+    // // transfer sol context
+    // let transfer_ctx = system_program::Transfer {
+    //     from: signer.to_account_info(),
+    //     to: dropper_vault.to_account_info(),
+    // };
 
-    // transfer sol instruction
-    let _ = system_program::transfer(
-        CpiContext::new(system_program.to_account_info(), transfer_ctx),
-        10_u64.pow(8_u32),
-    );
+    // // transfer sol instruction
+    // let _ = system_program::transfer(
+    //     CpiContext::new(system_program.to_account_info(), transfer_ctx),
+    //     10_u64.pow(8_u32),
+    // );
 
     // transfer sol context
     let pda_transfer_ctx = system_program::Transfer {
@@ -67,7 +67,7 @@ pub struct CreateSolGiveaway<'info> {
         init,
         payer = signer,
         space = SolGiveaway::SIZE,
-        seeds = [b"sol_giveaway".as_ref(), &options.giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &options.giveaway_id.to_le_bytes(), signer.key().as_ref()],
         bump,
     )]
     pub giveaway: Account<'info, SolGiveaway>,

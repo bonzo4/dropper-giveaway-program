@@ -12,12 +12,20 @@ pub mod dropper_giveaway {
 
     use super::*;
 
-    pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>, _giveaway_id: u64) -> Result<()> {
+    pub fn claim_sol_giveaway(
+        ctx: Context<ClaimSolGiveaway>,
+        _giveaway_id: u64,
+        _creator_key: Pubkey,
+    ) -> Result<()> {
         instructions::claim_sol_giveaway(ctx)
     }
 
-    pub fn claim_spl_giveaway(ctx: Context<ClaimSplGiveaway>, giveaway_id: u64) -> Result<()> {
-        instructions::claim_spl_giveaway(ctx, giveaway_id)
+    pub fn claim_spl_giveaway(
+        ctx: Context<ClaimSplGiveaway>,
+        giveaway_id: u64,
+        creator_key: Pubkey,
+    ) -> Result<()> {
+        instructions::claim_spl_giveaway(ctx, giveaway_id, creator_key)
     }
 
     pub fn create_sol_giveaway(
@@ -34,20 +42,36 @@ pub mod dropper_giveaway {
         instructions::create_spl_giveaway(ctx, options)
     }
 
-    pub fn payout_sol_giveaway(ctx: Context<PayoutSolGiveaway>, _giveaway_id: u64) -> Result<()> {
+    pub fn payout_sol_giveaway(
+        ctx: Context<PayoutSolGiveaway>,
+        _giveaway_id: u64,
+        _creator_key: Pubkey,
+    ) -> Result<()> {
         instructions::payout_sol_giveaway(ctx)
     }
 
-    pub fn payout_spl_giveaway(ctx: Context<PayoutSplGiveaway>, giveaway_id: u64) -> Result<()> {
-        instructions::payout_spl_giveaway(ctx, giveaway_id)
+    pub fn payout_spl_giveaway(
+        ctx: Context<PayoutSplGiveaway>,
+        giveaway_id: u64,
+        creator_key: Pubkey,
+    ) -> Result<()> {
+        instructions::payout_spl_giveaway(ctx, giveaway_id, creator_key)
     }
 
-    pub fn repo_sol_giveaway(ctx: Context<RepoSolGiveaway>, _giveaway_id: u64) -> Result<()> {
+    pub fn repo_sol_giveaway(
+        ctx: Context<RepoSolGiveaway>,
+        _giveaway_id: u64,
+        _creator_key: Pubkey,
+    ) -> Result<()> {
         instructions::repo_sol_giveaway(ctx)
     }
 
-    pub fn repo_spl_giveaway(ctx: Context<RepoSplGiveaway>, giveaway_id: u64) -> Result<()> {
-        instructions::repo_spl_giveaway(ctx, giveaway_id)
+    pub fn repo_spl_giveaway(
+        ctx: Context<RepoSplGiveaway>,
+        giveaway_id: u64,
+        creator_key: Pubkey,
+    ) -> Result<()> {
+        instructions::repo_spl_giveaway(ctx, giveaway_id, creator_key)
     }
 
     pub fn set_sol_giveaway_winners(

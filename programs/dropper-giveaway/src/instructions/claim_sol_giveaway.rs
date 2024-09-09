@@ -17,13 +17,13 @@ pub fn claim_sol_giveaway(ctx: Context<ClaimSolGiveaway>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(_giveaway_id: u64)]
+#[instruction(_giveaway_id: u64, _creator_key: Pubkey)]
 pub struct ClaimSolGiveaway<'info> {
     #[account(mut, signer)]
     pub signer: Signer<'info>,
     #[account(
         mut,
-        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes()],
+        seeds = [b"sol_giveaway".as_ref(), &_giveaway_id.to_le_bytes(), &_creator_key.as_ref()],
         bump,
         constraint=giveaway.winners.is_some()
     )]

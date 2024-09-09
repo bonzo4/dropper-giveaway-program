@@ -11,12 +11,13 @@ import { expect } from "chai";
 
 describe("Sol Giveaway", () => {
   const program = getProgram();
-  const giveawayId = -12;
+  const giveawayId = -24;
 
-  const giveawayPDA = getSolGiveawayPda(program, giveawayId);
   const owner = getOwnerKeypair();
   const manager = getManagerKeypair();
   const user = getUserKeypair();
+
+  const giveawayPDA = getSolGiveawayPda(program, giveawayId, owner.publicKey);
 
   it("It creates a sol giveaway", async () => {
     const tx = await program.methods
@@ -37,7 +38,7 @@ describe("Sol Giveaway", () => {
   it("It fails to pay out sol", async () => {
     try {
       await program.methods
-        .payoutSolGiveaway(new BN(giveawayId))
+        .payoutSolGiveaway(new BN(giveawayId), owner.publicKey)
         .signers([user])
         .accounts({ signer: user.publicKey })
         .rpc();
@@ -51,6 +52,7 @@ describe("Sol Giveaway", () => {
       .setSolGiveawayWinners({
         winnerKeys: [user.publicKey, user.publicKey],
         giveawayId: new BN(giveawayId),
+        creatorKey: owner.publicKey,
       })
       .signers([manager])
       .accounts({ signer: manager.publicKey })
@@ -64,7 +66,7 @@ describe("Sol Giveaway", () => {
 
   it("it pays out sol", async () => {
     await program.methods
-      .payoutSolGiveaway(new BN(giveawayId))
+      .payoutSolGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([manager])
       .accounts({ signer: manager.publicKey, winnerAccount: user.publicKey })
       .rpc()
@@ -79,7 +81,7 @@ describe("Sol Giveaway", () => {
 
   it("it claims sol", async () => {
     await program.methods
-      .claimSolGiveaway(new BN(giveawayId))
+      .claimSolGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([user])
       .accounts({ signer: user.publicKey })
       .rpc()
@@ -94,7 +96,7 @@ describe("Sol Giveaway", () => {
 
   it("repos unclaimed sol", async () => {
     await program.methods
-      .repoSolGiveaway(new BN(giveawayId))
+      .repoSolGiveaway(new BN(giveawayId), owner.publicKey)
       .signers([manager])
       .accountsPartial({
         signer: manager.publicKey,
@@ -111,7 +113,7 @@ describe("Sol Giveaway", () => {
   it("It fails to pay out sol 2", async () => {
     try {
       await program.methods
-        .payoutSolGiveaway(new BN(giveawayId))
+        .payoutSolGiveaway(new BN(giveawayId), owner.publicKey)
         .signers([owner])
         .accountsPartial({
           signer: owner.publicKey,
