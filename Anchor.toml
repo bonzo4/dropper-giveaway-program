@@ -11,7 +11,7 @@ dropper_giveaway = "8s9yegeQK6UJPJq25jquj7vQQx6yJJtKZ7CFLjUaj5cL"
 url = "https://api.devnet.solana.com"
 
 [provider]
-cluster = "devnet"
+cluster = "mainnet"
 wallet = "./owner.json"
 
 [scripts]
