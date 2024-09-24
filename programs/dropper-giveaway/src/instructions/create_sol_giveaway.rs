@@ -60,7 +60,7 @@ pub struct CreateSolGiveaway<'info> {
     pub signer: Signer<'info>,
     #[account(
         mut,
-        address=pubkey!("89LabAxMY6Bn9ak1Uz5LfQZtNybtFhpARatkm7wQHrJE")
+        address=pubkey!("A2RAA1j1RvQ5VDVzpmGY7S5JYc2abTXyLBUdze7DJKeM")
     )]
     pub dropper_vault: SystemAccount<'info>,
     #[account(

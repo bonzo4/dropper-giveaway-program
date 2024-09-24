@@ -9,3 +9,9 @@ test-ledger
 owner.json
 user.json
 manager.json
+vault.json
+buffer.json
+
+owner2.json
+manager2.json
+vault2.json

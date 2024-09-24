@@ -12,14 +12,14 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { expect } from "chai";
 
 describe("Spl Giveaway", () => {
-  const mint = new PublicKey("295D2K8jNxvvLGA3Uv1KWQ2cPD1ptHJuP44bMmUYBKzs");
+  const mint = new PublicKey("ERqyYaQdMa7MAp9fN8bMB3PrAjeWphkqZkXyoTkxAw5t");
 
   const owner = getOwnerKeypair();
   const manager = getManagerKeypair();
   const user = getUserKeypair();
 
   const program = getProgram();
-  const giveawayId = -24;
+  const giveawayId = -2;
 
   const giveawayPDA = getSplGiveawayPda(program, giveawayId, owner.publicKey);
 

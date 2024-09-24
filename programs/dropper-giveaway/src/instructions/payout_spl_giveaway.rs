@@ -56,7 +56,7 @@ pub struct PayoutSplGiveaway<'info> {
     #[account(
         mut,
         signer,
-        constraint=signer.key().to_string() == "FNSeGdeCFkULxGd7vSmWqBrQHN6XseCXBp51yXEjhSQQ",
+        constraint=signer.key().to_string() == "dvz991QfUpH5RByEXYaUamkmQqff9V9jE5msq2ni6kZ",
     )]
     pub signer: Signer<'info>,
     #[account(mut)]
